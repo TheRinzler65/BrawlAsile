@@ -1,4 +1,4 @@
-# BRAWL STARS API
+# BrawlStatistiques
 
 Cette application utilise l'API Brawl Stars pour récupérer des données sur les joueurs et les clubs de Brawl Stars. Le backend est écrit en express.js et le frontend est écrit en Svelte.
 
@@ -11,4 +11,4 @@ Cette application utilise l'API Brawl Stars pour récupérer des données sur le
 5. Allez sur localhost:PORT pour voir l'application.
 
 ## Crédit
-Merci à [wasdthedebugger](https://github.com/wasdthedebugger) pour la création de l'application
+Merci à [wasdthedebugger](https://github.com/wasdthedebugger) pour la base de création de l'application

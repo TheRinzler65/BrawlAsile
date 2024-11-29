@@ -111,7 +111,7 @@
                     {#if battle.battleTime}
                       {new Date(formatBattleTime(battle.battleTime)).toLocaleString()}
                     {:else}
-                      Non disponible
+                      <p>Non disponible</p>
                     {/if}</div>
                   <div><strong>Classement :</strong> {battle.battle?.rank || "N/A"}</div>
                   <div><strong>Trophées gagnés :</strong> {battle.battle?.trophyChange || 0}</div>
@@ -155,97 +155,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #121212;
-    color: #e0e0e0;
-  }
-
-  .search-container {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
-
-  .search-form {
-    display: block;
-    padding: 16px;
-    font-family: Arial, sans-serif;
-    background-color: #1c1c1c;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    flex: 1;
-    margin-right: 8px;
-  }
-
-  .search-form:last-child {
-    margin-right: 0;
-  }
-
-  .search-form input {
-    margin-right: 10px;
-    padding: 8px;
-    background-color: #333;
-    border: 1px solid #444;
-    color: #fff;
-    border-radius: 4px;
-    width: calc(100% - 80px); /* Ajuste la largeur du champ d'entrée */
-  }
-
-  .search-form button {
-    padding: 8px 12px;
-    cursor: pointer;
-    background-color: #6200ea;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-  }
-
-  .error {
-    color: #ff3b30;
-    font-weight: bold;
-    background-color: #d32f2f;
-    padding: 8px;
-    border-radius: 4px;
-  }
-
-  .details {
-    margin-top: 20px; /* Ajout d'un espacement plus grand */
-    padding: 15px; /* Augmenter le padding pour plus d'espace à l'intérieur */
-    border: 1px solid #444;
-    background-color: #2c2c2c;
-    border-radius: 4px;
-    width: 100%; /* S'étend sur toute la largeur du container */
-  }
-
-  .battle-log {
-    margin-top: 20px;
-  }
-
-  .battle-log ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  .battle-log li {
-    margin-top: 20px;
-    margin-bottom: 16px;
-    padding: 12px;
-    border: 1px solid #444;
-    border-radius: 4px;
-    background: #3a3a3a;
-    color: #e0e0e0;
-  }
-
-  .search-form input:hover, .search-form button:hover {
-    background-color: #3700b3;
-  }
-
-  .search-form input:focus, .search-form button:focus {
-    outline: 2px solid #bb86fc;
-  }
-</style>

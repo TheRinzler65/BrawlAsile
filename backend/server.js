@@ -65,7 +65,7 @@ app.get('/club/:clubTag', (req, res) => {
 
 // Route par défaut
 app.get('/', (req, res) => {
-    res.send('Send Player or Club Tag in URL');
+    res.send("Mettez le tag du joueur ou du club dans l'URL");
 });
 
 app.listen(port, () => {

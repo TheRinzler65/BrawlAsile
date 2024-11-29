@@ -27,24 +27,6 @@ app.get('/:playerTag', (req, res) => {
     });
 });
 
-// Recherche par club
-app.get('/club/:clubTag', (req, res) => {
-    const clubTag = req.params.clubTag;
-
-    axios({
-        method: 'get',
-        url: `https://api.brawlstars.com/v1/clubs/%23${clubTag}`,
-        headers: {
-            'Authorization': `Bearer ${apiKey}`
-        }
-    })
-    .then(response => res.send(response.data))
-    .catch(error => {
-        console.error(error);
-        res.status(404).send("Le club n'existe pas");
-    });
-});
-
 // Recherche des logs de bataille par joueur
 app.get('/battlelog/:playerTag', (req, res) => {
     const playerTag = req.params.playerTag;
@@ -60,6 +42,24 @@ app.get('/battlelog/:playerTag', (req, res) => {
     .catch(error => {
         console.error(error);
         res.status(404).send("Logs de bataille introuvables");
+    });
+});
+
+// Recherche par club
+app.get('/club/:clubTag', (req, res) => {
+    const clubTag = req.params.clubTag;
+
+    axios({
+        method: 'get',
+        url: `https://api.brawlstars.com/v1/clubs/%23${clubTag}`,
+        headers: {
+            'Authorization': `Bearer ${apiKey}`
+        }
+    })
+    .then(response => res.send(response.data))
+    .catch(error => {
+        console.error(error);
+        res.status(404).send("Le club n'existe pas");
     });
 });
 

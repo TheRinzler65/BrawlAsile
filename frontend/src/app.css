@@ -85,3 +85,8 @@ body {
 .search-form input:focus, .search-form button:focus {
     outline: 2px solid #bb86fc;
 }
+.star-player {
+    color: gold;
+    font-weight: bold;
+    margin-left: 5px;
+  }

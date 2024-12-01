@@ -8,4 +8,4 @@ start cmd /k "cd /d %~dp0frontend && npm run dev"
 
 timeout /t 5
 
-start http://localhost:5174/
+start http://localhost:5173/

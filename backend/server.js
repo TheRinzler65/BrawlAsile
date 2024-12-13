@@ -45,6 +45,33 @@ app.get('/battlelog/:playerTag', (req, res) => {
     });
 });
 
+// Recherche des Brawlers et informations associées
+app.get('/brawlers/:playerTag', (req, res) => {
+    const playerTag = req.params.playerTag;
+
+    axios({
+        method: 'get',
+        url: `https://api.brawlstars.com/v1/players/%23${playerTag}`,
+        headers: {
+            'Authorization': `Bearer ${apiKey}`
+        }
+    })
+    .then(response => {
+        const playerName = response.data.name;
+        const brawlers = response.data.brawlers;
+
+        if (brawlers) {
+            res.send({ playerName, brawlers });
+        } else {
+            res.status(404).send("Aucun Brawler trouvé pour ce joueur");
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        res.status(404).send("Joueur introuvable");
+    });
+});
+
 // Recherche par club
 app.get('/club/:clubTag', (req, res) => {
     const clubTag = req.params.clubTag;

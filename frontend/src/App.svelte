@@ -12,6 +12,10 @@
   let battleLog = null;
   let battleError = "";
 
+  let playerBrawlerTag = "";
+  let playerBrawlers = null;
+  let brawlerError = "";
+
   function resetState(type) {
     if (type === "player") {
       clubData = null;
@@ -37,6 +41,21 @@
     }
   }
 
+  async function getPlayerBrawlers() {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/brawlers/${playerBrawlerTag}`,
+      );
+      console.log("Liste des brawlers du joueur: ", response.data);
+      playerBrawlers = response.data;
+      brawlerError = null;
+    } catch (error) {
+      console.error(error);
+      brawlerError =
+        "Impossible de récupérer la liste des brawlers de ce joueur.";
+      playerBrawlers = null;
+    }
+  }
   async function getClubDetails() {
     resetState("club");
     try {
@@ -72,6 +91,20 @@
   function getIconUrl(iconId) {
     if (iconId) {
       return `https://cdn.brawlify.com/profile-icons/regular/${iconId}.png`;
+    }
+    return null;
+  }
+
+  function getIconBrawler(iconBrawlerId) {
+    if (iconBrawlerId) {
+      return `https://cdn.brawlify.com/brawlers/borders/${iconBrawlerId}.png`;
+    }
+    return null;
+  }
+
+  function getIconStarPower(iconStarPowerId) {
+    if (iconStarPowerId) {
+      return `https://cdn.brawlify.com/star-powers/borderless/${iconStarPowerId}.png`;
     }
     return null;
   }
@@ -128,6 +161,7 @@
       Flying_Fantasies: "Rêves aériens",
       Safety_Center: "Centre de sécurité",
       Sunset_Vista: "Coucher de soleil",
+      "Marksman's_Paradise": "Recoins d'élite",
       // Survivant Trio
       Burger_Bay: "Baie aux burgers",
       Thousand_Jellies: "Méduses par milliers",
@@ -226,12 +260,13 @@
 <div class="container">
   <div class="search-form">
     <!-- Statistique joueur -->
+    <h2>Information du joueur</h2>
     <input
       type="text"
-      placeholder="Entrez le tag du joueur"
+      placeholder="Entrez le tag du joueur pour voir ses informations"
       bind:value={playerTag}
     />
-    <button on:click={getPlayerDetails}>Rechercher joueur</button>
+    <button on:click={getPlayerDetails}>Afficher le joueur</button>
     {#if playerError}
       <div class="error">{playerError}</div>
     {:else if playerData}
@@ -243,7 +278,7 @@
             width="100"
           />
         {:else}
-          <p>Aucune icône disponible</p>
+          <p>-</p>
         {/if}
         <div class="player-info">
           <div><strong>Nom :</strong> {playerData.name}</div>
@@ -260,7 +295,7 @@
           </div>
           <div>
             <strong>Tag du club :</strong>
-            {playerData.club?.tag || "Aucun tag de club"}
+            {playerData.club?.tag || "-"}
           </div>
         </div>
       </div>
@@ -268,7 +303,7 @@
       <!-- Logs de bataille -->
       {#if battleLog && Array.isArray(battleLog.items) && battleLog.items.length > 0}
         <div class="battle-log">
-          <h2>Logs de Bataille</h2>
+          <h2>Journal de combat</h2>
           <ul>
             {#each battleLog.items as battle}
               <li>
@@ -287,10 +322,9 @@
                       formatBattleTime(battle.battleTime),
                     ).toLocaleString()}
                   {:else}
-                    Non disponible
+                    <p>-</p>
                   {/if}
                 </div>
-
                 {#if battle.battle?.mode === "soloShowdown"}
                   <div>
                     <strong>Joueurs :</strong>
@@ -301,8 +335,8 @@
                             <strong>Nom :</strong>
                             {player.name || "Inconnu"}
                             <br /><strong>Brawler :</strong>
-                            {player.brawler?.name || "Non disponible"}, {player
-                              .brawler?.power || "Non disponible"}
+                            {player.brawler?.name || "-"}, {player.brawler
+                              ?.power || "-"}
                             {#if player.starPlayer}
                               <br /><span class="star-player">Joueur star</span>
                             {/if}
@@ -328,14 +362,14 @@
                       {/each}
                     </ul>
                   </div>
-                {:else if battle.battle?.mode === "brawlBall" || battle.battle?.mode === "knockout" || battle.battle?.mode === "gemGrab"}
+                {:else if battle.battle?.mode === "brawlBall" || battle.battle?.mode === "knockout" || battle.battle?.mode === "gemGrab" || battle.battle?.mode === "heist"}
                   <div>
                     <strong>Durée :</strong>
-                    {battle.battle?.duration || "Non disponible"}
+                    {battle.battle?.duration || "-"}
                   </div>
                   <div>
                     <strong>Résultat :</strong>
-                    {battle.battle?.result || "N/A"}
+                    {battle.battle?.result || "-"}
                   </div>
                   {#if battle.battle?.starPlayer}
                     <div>
@@ -354,8 +388,7 @@
                             {#each team as player}
                               <li>
                                 {player.name} - {player.brawler.name}
-                                (Trophées : {player.brawler.trophies}, Pouvoir : {player
-                                  .brawler.power})
+                                (Trophées : {player.brawler.trophies} | Pouvoir : {player.brawler.power})
                               </li>
                             {/each}
                           </ul>
@@ -372,29 +405,87 @@
         <div class="error">{battleError}</div>
       {/if}
     {/if}
+  </div>
 
-    <!-- Liste Brawler -->
     <div class="search-form">
+      <!-- Formulaire pour les Brawlers -->
+      <h2>Recherche des Brawlers</h2>
       <input
         type="text"
-        placeholder="Entrez le tag du joueur"
-        bind:value={playerTag}
+        placeholder="Entrez le tag du joueur pour voir ses Brawlers"
+        bind:value={playerBrawlerTag}
       />
-      <button on:click={getPlayerDetails}>Voir ses brawlers</button>
-      {#if playerError}
-      <div class="error">{playerError}</div>
-      {:else if playerData}
-      <div class="player-brawlerlist">
-        
-      </div>
+      <button on:click={getPlayerBrawlers}>Rechercher Brawlers</button>
+      {#if brawlerError}
+        <div class="error">{brawlerError}</div>
+      {:else if playerBrawlers}
+        <div class="details">
+          <h3>Brawlers de {playerBrawlers.playerName}</h3>
+          <ul>
+            {#each playerBrawlers.brawlers as brawler}
+              <li class="information-brawler">
+                {#if brawler.id}
+                  <img
+                    src={getIconBrawler(brawler.id)}
+                    alt="Icône du brawler"
+                    width="100"
+                  />
+                {:else}
+                  <p>-</p>
+                {/if}
+                <div><strong>Nom :</strong> {brawler.name}</div>
+                <div><strong>Pouvoir :</strong> {brawler.power}</div>
+                <div><strong>Trophées :</strong> {brawler.trophies}</div>
+                <div><strong>Palier :</strong> {brawler.rank}</div>
+                <div>
+                  <strong>Gadgets :</strong>
+                  {#if brawler.gadgets && brawler.gadgets.length > 0}
+                    <ul>
+                      {#each brawler.gadgets as gadget}
+                        <li>{gadget.name}</li>
+                      {/each}
+                    </ul>
+                  {:else}
+                    <p>-</p>
+                  {/if}
+                </div>
+                <div>
+                  <strong>Equipement :</strong>
+                  {#if brawler.gears && brawler.gears.length > 0}
+                    <ul>
+                      {#each brawler.gears as gear}
+                        <li>{gear.name}</li>
+                      {/each}
+                    </ul>
+                  {:else}
+                    <p>-</p>
+                  {/if}
+                </div>
+                <div>
+                  <strong>Pouvoir Stars :</strong>
+                  {#if brawler.starPowers && brawler.starPowers.length > 0}
+                    <ul>
+                      {#each brawler.starPowers as starPower}
+                        <li>{starPower.name}</li>
+                      {/each}
+                    </ul>
+                  {:else}
+                    <p>-</p>
+                  {/if}
+                </div>
+              </li>
+            {/each}
+          </ul>
+        </div>
       {/if}
-  </div>
+    </div>
 
     <!-- Information Club -->
     <div class="search-form">
+      <h2>Information du club</h2>
       <input
         type="text"
-        placeholder="Entrez le tag du club"
+        placeholder="Entrez le tag du club pour voir ses informations"
         bind:value={clubTag}
       />
       <button on:click={getClubDetails}>Rechercher club</button>
@@ -404,27 +495,21 @@
         <div class="details">
           <div>{clubData.badgeID}</div>
           <div><strong>Nom du club :</strong> {clubData.name}</div>
-          <br />
           <div><strong>Description :</strong> {clubData.description}</div>
-          <br />
           <div><strong>Trophées :</strong> {clubData.trophies}</div>
-          <br />
           <div>
             <strong>Trophées requis:</strong>
             {clubData.requiredTrophies}
           </div>
-          <br />
           <div>
             <strong>Nombre de membres :</strong>
             {clubData.members.length}
           </div>
-          <br />
           <div>
             <strong>Président :</strong>
             {clubData.members.find((m) => m.role === "president")?.name ||
               "Non disponible"}
           </div>
-          <br />
           <div><strong>Membres :</strong></div>
           <ol>
             {#each clubData.members as member}
@@ -438,11 +523,9 @@
                 <strong>Trophées :</strong>
                 {member.trophies}<br />
               </li>
-              <br />
             {/each}
           </ol>
         </div>
       {/if}
     </div>
-  </div>
 </div>
